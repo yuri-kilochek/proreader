@@ -1,0 +1,14 @@
+{
+  "name": "proreader",
+  "version": "0.0.1",
+  "description": "Binary stream reading/parsing without pain.",
+  "main": "proreader.js",
+  "keywords": [
+    "stream",
+    "parser",
+    "reader",
+    "proactor"
+  ],
+  "author": "Yuri Kilochek <yuri.kilochek@gmail.com>",
+  "license": "ISC"
+}
