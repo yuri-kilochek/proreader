@@ -179,6 +179,38 @@ class ProReader {
         return this.fill(container, 'BE', options);
     }
 };
+
+for (let [bufferName, TypedArray] of [
+    ['Int8', Int8Array],
+    ['Int16', Int8Array],
+    ['Int32', Int32Array],
+    ['UInt8', Uint8Array],
+    ['UInt16', Uint16Array],
+    ['UInt32', Uint32Array],
+    ['Float', Float32Array],
+    ['Double', Float64Array],
+]) {
+    const methodName = `read${bufferName}`;
+    Object.assign(ProReader.prototype, {
+        async [methodName](endianness = nativeEndianness) {
+            let typedArray = new TypedArray(1);
+            let length = await this._fillTypedArray(typedArray, endianness);
+            if (length == 0) {
+                throw new NotEnoughError();
+            }
+            return typedArray[0];
+        },
+
+        [methodName + 'LE'](endianness) {
+            return this[methodName]('LE');
+        },
+
+        [methodName + 'BE'](endianness) {
+            return this[methodName]('LE');
+        },
+    });
+}
+
 module.exports = exports = ProReader;
 
 class NotEnoughError extends Error {};
@@ -191,11 +223,12 @@ exports.NotEnoughError = NotEnoughError;
     rs.write(Buffer.from([1, 0, 0, 0]));
     rs.write(Buffer.from([2, 0, 0]));
     rs.write(Buffer.from([0, 3]));
-    console.log(await pr.fill(a), a, pr.bytesRemain);
     rs.write(Buffer.from([0, 0, 0, 4]));
     rs.write(Buffer.from([0, 0]));
     rs.end();
-    console.log(await pr.fill(a, { partial: false }), a, pr.bytesRemain);
+    console.log(await pr.fill(a), a, pr.bytesRemain);
+    console.log(await pr.fill(a, { partial: true }), a, pr.bytesRemain);
+    console.log(await pr.readUInt32LE());
 })().catch(console.error);
 
 //for (let endianness of ['LE', 'BE']) {
