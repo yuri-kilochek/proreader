@@ -10,5 +10,9 @@
     "proactor"
   ],
   "author": "Yuri Kilochek <yuri.kilochek@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "es6-error": "^4.0.2",
+    "flushwritable": "^1.0.0"
+  }
 }
