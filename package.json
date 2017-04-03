@@ -1,7 +1,7 @@
 {
-  "name": "binary-serializer",
+  "name": "prostream",
   "version": "0.1.0",
-  "description": "Binary stream parsing and generation without pain.",
+  "description": "Binary stream parsing without pain.",
   "main": "index.js",
   "keywords": [
     "stream",
