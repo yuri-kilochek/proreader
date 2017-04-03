@@ -1,18 +1,21 @@
 {
-  "name": "proreader",
-  "version": "0.0.1",
-  "description": "Binary stream reading/parsing without pain.",
-  "main": "proreader.js",
+  "name": "binary-serializer",
+  "version": "0.1.0",
+  "description": "Binary stream parsing and generation without pain.",
+  "main": "index.js",
   "keywords": [
     "stream",
     "parser",
     "reader",
-    "proactor"
+    "serialzier",
+    "writer",
+    "binary",
+    "proactor",
+    "buffer"
   ],
   "author": "Yuri Kilochek <yuri.kilochek@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "es6-error": "^4.0.2",
-    "flushwritable": "^1.0.0"
+    "es6-error": "^4.0.2"
   }
 }
