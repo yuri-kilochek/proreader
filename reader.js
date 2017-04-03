@@ -144,6 +144,14 @@ class Reader {
             throw error;
         }
     }
+
+    async readString(codeUnitCount) {
+        let buffer = Buffer.alloc(codeUnitCount);
+        let blockCount = await this._readBuffer(buffer, codeUnitCount);
+        if (blockCount == 0) { throw new NotEnoughError(); }
+        let string = buffer.toString();
+        return string;
+    }
 }
 
 for (let endianness of ['LE', 'BE']) {
