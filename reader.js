@@ -148,7 +148,7 @@ class Reader {
 
 for (let endianness of ['LE', 'BE']) {
     Object.assign(Reader.prototype, {
-        async [`read${endianness}`](container, options = {}) {
+        [`read${endianness}`](container, options = {}) {
             options = Object.assign({}, options, { endianness });
             return this.read(container, options);
         },
@@ -179,7 +179,7 @@ for (let [methodTypeName, TypedArray] of [
     });
     for (let endianness of ['LE', 'BE']) {
         Object.assign(Reader.prototype, {
-            async [`${methodName}${endianness}`]() {
+            [`${methodName}${endianness}`]() {
                 return this[methodName]({ endianness });
             },
         });
