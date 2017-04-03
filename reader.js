@@ -12,9 +12,7 @@ class Reader {
     constructor(stream) {
         this._stream = new PassThroughStream();
 
-        this._error = null;
-        this._data = [];
-        this._end = false;
+        this._events = [];
 
         this._bytesRemain = undefined;
 
@@ -22,27 +20,19 @@ class Reader {
         this._reject = null;
 
         stream.once('error', this._errorHandler = (error) => {
-            this._stream.removeListener('data', this._dataHandler);
-            this._stream.removeListener('end', this._endHandler);
-            this._error = error;
-            this._bytesRemain = 0;
-            for (let chunk of this._data) {
-                this._bytesRemain += chunk.length;
-            }
+            this._stream.pause();
+            this._events.push({ error });
             this._dispatch();
         });
-        this._stream.on('data', this._dataHandler = (chunk) => {
-            this._data.push(chunk);
+        this._stream.on('data', this._dataHandler = (data) => {
+            this._stream.pause();
+            this._events.push({ data });
             this._dispatch();
         }).pause();
         this._stream.once('end', this._endHandler = () => {
             stream.removeListener('error', this._errorHandler);
             this._stream.removeListener('data', this._dataHandler);
-            this._end = true;
-            this._bytesRemain = 0;
-            for (let chunk of this._data) {
-                this._bytesRemain += chunk.length;
-            }
+            this._events.push({ end: true });
             this._dispatch();
         });
 
@@ -58,48 +48,45 @@ class Reader {
     }
 
     _unreadChunk(chunk) {
-        this._data.unshift(chunk);
-        if (this._end || this._error) {
+        this._events.unshift({ data: chunk });
+        if (this._bytesRemain !== undefined) {
             this._bytesRemain += chunk.length;
         }
     }
 
     _dispatch() {
-        if (!this._resolve) {
-            if (!this._end && !this._error) {
-                this._stream.pause();
-            }
+        if (!this._resolve) { return; }
+        if (this._events.length == 0) {
+            this._stream.resume();
             return;
         }
-        if (this._data.length > 0) {
-            if (!this._end && !this._error) {
-                this._stream.pause();
-            }
-            let chunk = this._data.shift();
-            if (this._end || this._error) {
-                this._bytesRemain -= chunk.length;
-            }
+        let event = this._events.shift();
+        if (event.data) {
             let resolve = this._resolve;
             this._resolve = null;
             this._reject = null;
-            resolve(chunk);
+            if (this._bytesRemain !== undefined) {
+                this._bytesRemain -= event.data.length;
+            }
+            resolve(event.data);
             return;
         }
-        if (this._end) {
+        if (event.end) {
             let resolve = this._resolve;
             this._resolve = null;
             this._reject = null;
+            this._events.unshift(event);
+            this._bytesRemain = 0;
             resolve(null);
             return;
         }
-        if (this._error) {
+        if (event.error) {
             let reject = this._reject;
             this._resolve = null;
             this._reject = null;
-            reject(this._error);
+            reject(event.error);
             return;
         }
-        this._stream.resume();
     }
 
     async _readBuffer(buffer, blockLength) {
