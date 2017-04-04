@@ -2,7 +2,6 @@
   "name": "prostream",
   "version": "0.1.0",
   "description": "Binary stream parsing without pain.",
-  "main": "index.js",
   "keywords": [
     "stream",
     "parser",
@@ -15,7 +14,16 @@
   ],
   "author": "Yuri Kilochek <yuri.kilochek@gmail.com>",
   "license": "ISC",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha tests"
+  },
   "dependencies": {
     "es6-error": "^4.0.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "mocha": "^3.2.0"
   }
 }
